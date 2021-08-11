@@ -7,6 +7,29 @@ const app = express()
 const port = process.env.PORT || 3000
 
 
+const multer = require('multer')
+const upload = multer({
+    dest: 'images',
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match("/\.(doc|docx)$/")) {
+            return cb(new Error('Please upload a PDF'))
+        } else {
+            cb(undefined, true)
+        }
+
+    }
+})
+
+const errorMiddleware = (req, res, next) => {
+    throw new Error('From my middleware')
+}
+
+app.post('/upload', errorMiddleware, (req, res) => {
+    res.send()
+})
 
 app.use(express.json())
 app.use(userRouter)
@@ -15,14 +38,3 @@ app.use(taskRouter)
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
 })
-
-
-
-
-// const myFunction = async () => {
-//     const password = 'Red12345!'
-//     const hashedPassword = await bcrypt.hash(password, 8)
-//
-//     const isMatch = await bcrypt.compare('sed12345!', hashedPassword)
-// }
-// myFunction()
